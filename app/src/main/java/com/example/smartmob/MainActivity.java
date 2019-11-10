@@ -7,7 +7,16 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import java.util.Random;
+
 public class MainActivity extends AppCompatActivity {
+
+    private String randomPin(){
+        Random rand = new Random();
+        int randNum = rand.nextInt(100000);
+        String pin = String.format("%06d", randNum);
+        return pin;
+    }
 
     protected void onJoinNewGroupBtn(){
         Intent intent = new Intent(this, JoinGroupActivity.class);
@@ -16,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onCreateGroupBtn(){
         Intent intent = new Intent(this, CreateGroupActivity.class);
+        String pin = randomPin();
+        intent.putExtra("pin",pin);
         startActivity(intent);
     }
 
