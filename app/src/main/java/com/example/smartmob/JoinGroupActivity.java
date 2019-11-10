@@ -4,13 +4,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class JoinGroupActivity extends AppCompatActivity {
 
     public void onSubmitBtn(View v){
+        EditText mGroupPinView = findViewById(R.id.groupPinInput);
+        String groupPin = mGroupPinView.getText().toString().trim();
+
         Intent intent = new Intent(this, FloodMessageActivity.class);
+        intent.putExtra("groupPin",groupPin);
         startActivity(intent);
     }
 
