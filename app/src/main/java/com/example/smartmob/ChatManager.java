@@ -2,8 +2,6 @@ package com.example.smartmob;
 
 import android.os.Looper;
 
-import com.google.common.hash.BloomFilter;
-import com.google.common.hash.Funnels;
 
 import java.net.InetAddress;
 import java.nio.charset.Charset;
@@ -62,13 +60,6 @@ public class ChatManager implements OnDataReceiveListener {
 
     private boolean isNewMessage(ChatMessage chatMessage) {
         return !DBManager.getInstance().findMessage(chatMessage);
-//        List<ChatMessage> messages = DBManager.getInstance().fetchChatMessageList();
-//        for(ChatMessage message : messages){
-//            if(message.getId().equals(chatMessage.getId())){
-//               return false;
-//            }
-//        }
-//        return true;
     }
     @Override
     public void onDataReceive(Object data, InetAddress address) {
@@ -81,7 +72,7 @@ public class ChatManager implements OnDataReceiveListener {
                     mAdHocManager.sendViaBroadcast(chatMessage);
                 }
 
-                if(subscribedGroup.equals(chatMessage.getGroupId())) {
+                if(groupPin.equals(chatMessage.getPin())) {
                     mOnAddNewMessageListener.onAddNewMessageToUi(chatMessage);
                     showToast("insert new message");
                 }
