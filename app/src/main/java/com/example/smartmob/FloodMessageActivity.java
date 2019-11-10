@@ -10,6 +10,7 @@ import android.widget.RadioButton;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class FloodMessageActivity extends AppCompatActivity {
+    private ChatManager mChatManager;
 
     public void onExitBtn(View v){
         Intent intent = new Intent(this, JoinGroupActivity.class);
@@ -21,6 +22,10 @@ public class FloodMessageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_flood_message);
+
+        Intent intent = getIntent();
+        String groupPin = intent.getExtras().getString("groupPin");
+        mChatManager = new ChatManager(groupPin);
 
         final Button button = findViewById(R.id.exitGroup);
         button.setOnClickListener(new View.OnClickListener() {
