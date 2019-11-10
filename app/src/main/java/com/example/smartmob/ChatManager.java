@@ -53,7 +53,6 @@ public class ChatManager implements OnDataReceiveListener {
 
     void sendMessage(ChatMessage message){
         mAdHocManager.sendViaBroadcast(message);
-        // isNew?
         DBManager.getInstance().addMessage(message);
     }
 
