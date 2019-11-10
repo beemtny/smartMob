@@ -23,6 +23,7 @@ public class CreateGroupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group);
 
+
         final Button register_button = findViewById(R.id.createGroupButton);
         register_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
