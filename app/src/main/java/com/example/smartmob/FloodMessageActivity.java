@@ -9,7 +9,11 @@ import android.widget.RadioButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class FloodMessageActivity extends AppCompatActivity {
+interface onAddNewMessageListener {
+    void onAddNewMessageToUi(ChatMessage message);
+}
+
+public class FloodMessageActivity extends AppCompatActivity implements onAddNewMessageListener {
     private ChatManager mChatManager;
 
     public void onExitBtn(View v){
@@ -26,6 +30,8 @@ public class FloodMessageActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String groupPin = intent.getExtras().getString("groupPin");
         mChatManager = new ChatManager(groupPin);
+        mChatManager.setOnAddNewMessageListener(this);
+        mChatManager.start();
 
         final Button button = findViewById(R.id.exitGroup);
         button.setOnClickListener(new View.OnClickListener() {
@@ -33,5 +39,16 @@ public class FloodMessageActivity extends AppCompatActivity {
                 onExitBtn(v);
             }
         });
+    }
+
+    @Override
+    public void onAddNewMessageToUi(final ChatMessage message) {
+        // display message
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mChatManager.stop();
     }
 }
