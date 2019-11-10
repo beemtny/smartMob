@@ -63,9 +63,6 @@ public class DBManager extends SQLiteOpenHelper {
     }
 
     public boolean addMessage(ChatMessage chatMessage){
-        if(findMessage(chatMessage)){
-            return false;
-        }
 
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
 
