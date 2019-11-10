@@ -49,9 +49,9 @@ public class DBManager extends SQLiteOpenHelper {
         }
 
         while(!(cursor != null && cursor.isAfterLast())) {
-            String cpin = cursor.getString(1);
+            String pin = cursor.getString(1);
 
-            if (cpin.equals(message.getPin().toString())){
+            if (pin.equals(message.getPin().toString())){
                 sqLiteDatabase.close();
                 return true;
             }
