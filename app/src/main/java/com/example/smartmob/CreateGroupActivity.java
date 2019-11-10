@@ -43,7 +43,7 @@ public class CreateGroupActivity extends AppCompatActivity {
         groupPin.setText(pin);
 
         mChatManager = new ChatManager(pin);
-//        mChatManager.start();
+        mChatManager.start();
 
         final Button sendButton = findViewById(R.id.createGroupButton);
         sendButton.setOnClickListener(new View.OnClickListener() {

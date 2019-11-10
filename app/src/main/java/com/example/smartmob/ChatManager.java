@@ -73,8 +73,10 @@ public class ChatManager implements OnDataReceiveListener {
                 }
 
                 if(groupPin.equals(chatMessage.getPin())) {
-                    mOnAddNewMessageListener.onAddNewMessageToUi(chatMessage);
-                    showToast("insert new message");
+                    if (mOnAddNewMessageListener.equals(null)){
+                        mOnAddNewMessageListener.onAddNewMessageToUi(chatMessage);
+                        showToast("insert new message");
+                    }
                 }
             } else {
                 showToast("message exist");
