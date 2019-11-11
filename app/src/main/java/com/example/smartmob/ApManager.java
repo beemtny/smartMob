@@ -167,39 +167,49 @@ class ApManager {
         try {
             if (enabled) { // disable WiFi in any case
                 wifiManager.setWifiEnabled(false);
+                turnOnHotspot();
             }
-            Method method = wifiManager.getClass().getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class);
-            Boolean success = (Boolean) method.invoke(wifiManager, wifiConfig, enabled);
+            else {
+                turnOffHotspot();
+            }
+//            Method method = wifiManager.getClass().getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class);
+//            Boolean success = (Boolean) method.invoke(wifiManager, wifiConfig, enabled);
 
         } catch (Exception e) {
             Log.e(this.getClass().toString(), "", e);
         }
     }
 
-//    private WifiManager.LocalOnlyHotspotReservation mReservation;
-//
-//    private void turnOnHotspot() {
-//        WifiManager manager = (WifiManager) AppApplication.getInstance().getContext().getSystemService(AppApplication.getInstance().getContext().WIFI_SERVICE);
-//
-//        manager.startLocalOnlyHotspot(new WifiManager.LocalOnlyHotspotCallback() {
-//
-//            @Override
-//            public void onStarted(WifiManager.LocalOnlyHotspotReservation reservation) {
-//                super.onStarted(reservation);
-//                mReservation = reservation;
-//            }
-//
-//            @Override
-//            public void onStopped() {
-//                super.onStopped();
-//            }
-//
-//            @Override
-//            public void onFailed(int reason) {
-//                super.onFailed(reason);
-//            }
-//        }, new Handler());
-//    }
+    private WifiManager.LocalOnlyHotspotReservation mReservation;
+
+    private void turnOnHotspot() {
+        WifiManager manager = (WifiManager) AppApplication.getInstance().getContext().getSystemService(AppApplication.getInstance().getContext().WIFI_SERVICE);
+
+        manager.startLocalOnlyHotspot(new WifiManager.LocalOnlyHotspotCallback() {
+
+            @Override
+            public void onStarted(WifiManager.LocalOnlyHotspotReservation reservation) {
+                super.onStarted(reservation);
+                mReservation = reservation;
+            }
+
+            @Override
+            public void onStopped() {
+                super.onStopped();
+            }
+
+            @Override
+            public void onFailed(int reason) {
+                super.onFailed(reason);
+            }
+        }, new Handler());
+    }
+
+    private void turnOffHotspot() {
+        if (mReservation != null) {
+            mReservation.close();
+        }
+    }
 
     private WIFI_AP_STATE getWifiApState() {
         try {
