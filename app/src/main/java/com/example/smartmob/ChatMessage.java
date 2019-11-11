@@ -1,11 +1,14 @@
 package com.example.smartmob;
 
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Date;
 
 
-class ChatMessage{
+class ChatMessage implements Serializable{
 
     private String id;
     private String title;
@@ -45,11 +48,11 @@ class ChatMessage{
         return createdAt;
     }
 
-//    private void writeObject(ObjectOutputStream out) throws IOException {
-//        out.defaultWriteObject();
-//    }
-//
-//    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-//        in.defaultReadObject();
-//    }
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+    }
 }
