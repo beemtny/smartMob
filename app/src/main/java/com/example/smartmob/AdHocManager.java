@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 
 import java.net.InetAddress;
+import java.util.List;
 
 class AdHocManager {
 
