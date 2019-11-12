@@ -44,7 +44,16 @@ class ApManager {
     ApManager() {
         context = AppApplication.getInstance().getContext();
         wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        wifiConfig.SSID = "MANET";
+        wifiConfig.SSID = "iris 550";
+        wifiConfig.preSharedKey  = "6b4d9aaa" ;
+        wifiConfig.status = WifiConfiguration.Status.ENABLED;
+        wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+        wifiConfig.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+        wifiConfig.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+        wifiConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
+        wifiConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+        wifiConfig.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
+        wifiConfig.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
         currentMode = Math.random() <= 0.5 ? WIFI_MODE.CLIENT : WIFI_MODE.HOTSPOT;
     }
 
@@ -65,9 +74,9 @@ class ApManager {
     }
 
     private void clientMode(){
-        if(isWifiApEnabled()){
-            setWifiApEnabled(null, false);
-        }
+//        if(isWifiApEnabled()){
+//            setWifiApEnabled(null, false);
+//        }
         if(!wifiManager.isWifiEnabled()){
             wifiManager.setWifiEnabled(true);
         }
@@ -86,13 +95,13 @@ class ApManager {
             public void run() {
                 handler.post(new Runnable() {
                     public void run() {
-                        if(currentMode == WIFI_MODE.HOTSPOT){
-                            clientMode();
-                        }
-                        else{
-                            hotspotMode();
-                        }
-                        Toast.makeText(context,"Changing to mode = " + (currentMode == WIFI_MODE.HOTSPOT ? "Hotspot" : "Client"),Toast.LENGTH_SHORT).show();
+//                        if(currentMode == WIFI_MODE.HOTSPOT){
+//                            clientMode();
+//                        }
+//                        else{
+//                            hotspotMode();
+//                        }
+//                        Toast.makeText(context,"Changing to mode = " + (currentMode == WIFI_MODE.HOTSPOT ? "Hotspot" : "Client"),Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -167,11 +176,16 @@ class ApManager {
         try {
             if (enabled) { // disable WiFi in any case
                 wifiManager.setWifiEnabled(false);
-                turnOnHotspot();
             }
-            else {
-                turnOffHotspot();
-            }
+            Method method = wifiManager.getClass().getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class);
+            Boolean success = (Boolean) method.invoke(wifiManager, wifiConfig, enabled);
+//            if (enabled) { // disable WiFi in any case
+//                wifiManager.setWifiEnabled(false);
+//                turnOnHotspot();
+//            }
+//            else {
+//                turnOffHotspot();
+//            }
 //            Method method = wifiManager.getClass().getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class);
 //            Boolean success = (Boolean) method.invoke(wifiManager, wifiConfig, enabled);
 
@@ -182,34 +196,34 @@ class ApManager {
 
     private WifiManager.LocalOnlyHotspotReservation mReservation;
 
-    private void turnOnHotspot() {
-        WifiManager manager = (WifiManager) AppApplication.getInstance().getContext().getSystemService(AppApplication.getInstance().getContext().WIFI_SERVICE);
-
-        manager.startLocalOnlyHotspot(new WifiManager.LocalOnlyHotspotCallback() {
-
-            @Override
-            public void onStarted(WifiManager.LocalOnlyHotspotReservation reservation) {
-                super.onStarted(reservation);
-                mReservation = reservation;
-            }
-
-            @Override
-            public void onStopped() {
-                super.onStopped();
-            }
-
-            @Override
-            public void onFailed(int reason) {
-                super.onFailed(reason);
-            }
-        }, new Handler());
-    }
-
-    private void turnOffHotspot() {
-        if (mReservation != null) {
-            mReservation.close();
-        }
-    }
+//    private void turnOnHotspot() {
+//        WifiManager manager = (WifiManager) AppApplication.getInstance().getContext().getSystemService(AppApplication.getInstance().getContext().WIFI_SERVICE);
+//
+//        manager.startLocalOnlyHotspot(new WifiManager.LocalOnlyHotspotCallback() {
+//
+//            @Override
+//            public void onStarted(WifiManager.LocalOnlyHotspotReservation reservation) {
+//                super.onStarted(reservation);
+//                mReservation = reservation;
+//            }
+//
+//            @Override
+//            public void onStopped() {
+//                super.onStopped();
+//            }
+//
+//            @Override
+//            public void onFailed(int reason) {
+//                super.onFailed(reason);
+//            }
+//        }, new Handler());
+//    }
+//
+//    private void turnOffHotspot() {
+//        if (mReservation != null) {
+//            mReservation.close();
+//        }
+//    }
 
     private WIFI_AP_STATE getWifiApState() {
         try {

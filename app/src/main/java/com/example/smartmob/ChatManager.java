@@ -75,9 +75,11 @@ public class ChatManager implements OnDataReceiveListener {
             ChatMessage chatMessage = (ChatMessage)data;
             if(isNewMessage(chatMessage)){
                 DBManager.getInstance().addMessage(chatMessage);
-//                if(!address.getHostAddress().equals("192.168.43.1")){
+                mOnAddNewMessageListener.onAddNewMessageToUi(chatMessage);
+                showToast("insert new message");
+                if(!address.getHostAddress().equals("192.168.43.1")){
                     mAdHocManager.sendViaBroadcast(chatMessage);
-//                }
+                }
 
                 if(groupPin.equals(chatMessage.getPin())) {
                     if (!mOnAddNewMessageListener.equals(null)){
