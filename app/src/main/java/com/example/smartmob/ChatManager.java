@@ -52,13 +52,21 @@ public class ChatManager implements OnDataReceiveListener {
     }
 
     void sendMessage(ChatMessage message){
-        mAdHocManager.sendViaBroadcast(message);
         DBManager.getInstance().addMessage(message);
+        sendAllExisted(message);
     }
 
 
     private boolean isNewMessage(ChatMessage chatMessage) {
         return !DBManager.getInstance().findMessage(chatMessage);
+    }
+
+    private void sendAllExisted(ChatMessage newMessage){
+        mAdHocManager.sendViaBroadcast(newMessage);
+        List<ChatMessage> chatMessageList = DBManager.getInstance().fetchChatMessageList();
+        for(ChatMessage m: chatMessageList){
+            mAdHocManager.sendViaBroadcast(m);
+        }
     }
     @Override
     public void onDataReceive(Object data, InetAddress address) {
@@ -67,12 +75,12 @@ public class ChatManager implements OnDataReceiveListener {
             ChatMessage chatMessage = (ChatMessage)data;
             if(isNewMessage(chatMessage)){
                 DBManager.getInstance().addMessage(chatMessage);
-                if(!address.getHostAddress().equals("192.168.43.1")){
+//                if(!address.getHostAddress().equals("192.168.43.1")){
                     mAdHocManager.sendViaBroadcast(chatMessage);
-                }
+//                }
 
                 if(groupPin.equals(chatMessage.getPin())) {
-                    if (mOnAddNewMessageListener.equals(null)){
+                    if (!mOnAddNewMessageListener.equals(null)){
                         mOnAddNewMessageListener.onAddNewMessageToUi(chatMessage);
                         showToast("insert new message");
                     }

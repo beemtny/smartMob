@@ -1,12 +1,15 @@
 package com.example.smartmob;
 
 //import android.content.Intent;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
+import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 interface onAddNewMessageListener {
@@ -29,6 +32,10 @@ public class FloodMessageActivity extends AppCompatActivity implements onAddNewM
 
         Intent intent = getIntent();
         String groupPin = intent.getExtras().getString("groupPin");
+
+        TextView PinView = findViewById(R.id.pin);
+        PinView.setText(groupPin);
+
         mChatManager = new ChatManager(groupPin);
         mChatManager.setOnAddNewMessageListener(this);
         mChatManager.start();
@@ -44,7 +51,25 @@ public class FloodMessageActivity extends AppCompatActivity implements onAddNewM
     @Override
     public void onAddNewMessageToUi(final ChatMessage message) {
         // display message
+        AlertDialog.Builder builder = new AlertDialog.Builder(FloodMessageActivity.this);
+
+//set title
+        builder.setTitle(message.getTitle());
+//set message
+        builder.setMessage(message.getText());
+//sest cancle
+        builder.setCancelable(true);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
+
 
     @Override
     protected void onDestroy() {
