@@ -16,22 +16,16 @@ import java.util.UUID;
 public class BeaconData implements Serializable {
 
     private String id;
-    private boolean isRescuer;
     private BloomFilter<String> mBloomfilter;
 
 
-    BeaconData(boolean isRescuer, BloomFilter<String> bloomfilter){
-        this.isRescuer = isRescuer;
+    BeaconData( BloomFilter<String> bloomfilter){
         this.mBloomfilter = bloomfilter;
         id = UUID.randomUUID().toString();
     }
 
     public String getId() {
         return id;
-    }
-
-    public boolean isRescuer(){
-        return isRescuer;
     }
 
     public byte[] getByte(){

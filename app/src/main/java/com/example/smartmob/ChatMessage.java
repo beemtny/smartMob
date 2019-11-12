@@ -57,6 +57,6 @@ class ChatMessage implements Serializable{
     }
 
     public String toBloomfilterString(){
-        return text;
+        return id + createdAt.toString();
     }
 }

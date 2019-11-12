@@ -72,7 +72,8 @@ public class ChatManager implements OnDataReceiveListener, OnWifiStateChangedLis
     }
 
     void sendBeacon(){
-        mAdHocManager.sendViaBroadcast(mBloomfilter);
+        BeaconData beacon = new BeaconData(mBloomfilter);
+        mAdHocManager.sendViaBroadcast(beacon);
     }
 
     @Override
@@ -106,12 +107,12 @@ public class ChatManager implements OnDataReceiveListener, OnWifiStateChangedLis
 
     @Override
     public void onDataReceive(Object data, InetAddress address) {
-        if (data instanceof BloomFilter) {
+        if (data instanceof BeaconData) {
             BeaconData beacon = (BeaconData)data;
             showToast("Rec Beacon from " + address.getHostAddress());
             checkBloomFilter(beacon.getBloomfilter(), address);
             //todo Check bloomfilter then send back beacon and data
-            if(!address.getHostAddress().equals("192.168.43.1")){
+            if(!address.getHostAddress().equals(BroadcastManager.getIpAddress()) && !address.getHostAddress().equals("192.168.43.1")){
                 sendBeacon();
                 showToast("Sendback Beacon");
             }
@@ -119,7 +120,7 @@ public class ChatManager implements OnDataReceiveListener, OnWifiStateChangedLis
         else if (data instanceof ChatMessage){
             showToast("Rec Message from " + address.getHostAddress());
             ChatMessage chatMessage = (ChatMessage)data;
-            if(!mBloomfilter.mightContain(chatMessage.toBloomfilterString())){
+            if(isNewMessage(chatMessage)){
                 showToast("forward new message");
                 DBManager.getInstance().addMessage(chatMessage);
                 mBloomfilter.put(chatMessage.toBloomfilterString());
