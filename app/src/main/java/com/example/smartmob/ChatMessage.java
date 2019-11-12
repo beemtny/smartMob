@@ -55,4 +55,8 @@ class ChatMessage implements Serializable{
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
     }
+
+    public String toBloomfilterString(){
+        return text;
+    }
 }

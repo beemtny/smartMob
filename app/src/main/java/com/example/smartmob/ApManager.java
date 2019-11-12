@@ -74,9 +74,9 @@ class ApManager {
     }
 
     private void clientMode(){
-//        if(isWifiApEnabled()){
-//            setWifiApEnabled(null, false);
-//        }
+        if(isWifiApEnabled()){
+            setWifiApEnabled(null, false);
+        }
         if(!wifiManager.isWifiEnabled()){
             wifiManager.setWifiEnabled(true);
         }
@@ -95,13 +95,13 @@ class ApManager {
             public void run() {
                 handler.post(new Runnable() {
                     public void run() {
-//                        if(currentMode == WIFI_MODE.HOTSPOT){
-//                            clientMode();
-//                        }
-//                        else{
-//                            hotspotMode();
-//                        }
-//                        Toast.makeText(context,"Changing to mode = " + (currentMode == WIFI_MODE.HOTSPOT ? "Hotspot" : "Client"),Toast.LENGTH_SHORT).show();
+                        if(currentMode == WIFI_MODE.HOTSPOT){
+                            clientMode();
+                        }
+                        else{
+                            hotspotMode();
+                        }
+                        Toast.makeText(context,"Changing to mode = " + (currentMode == WIFI_MODE.HOTSPOT ? "Hotspot" : "Client"),Toast.LENGTH_SHORT).show();
                     }
                 });
             }

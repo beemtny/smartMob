@@ -14,6 +14,7 @@ class AdHocManager {
 
     private ApManager mAPManager;
     private BroadcastManager mBroadcastManager;
+    private OnWifiStateChangedListener mOnWifiStateChangedListener;
 
     BroadcastReceiver wifiReceiver;
     BroadcastReceiver apReceiver;
@@ -28,6 +29,10 @@ class AdHocManager {
 
     void setupListener(OnDataReceiveListener listener){
         mBroadcastManager.setListener(listener);
+    }
+
+    void setOnWifiStateChangedListener(OnWifiStateChangedListener listener){
+        mOnWifiStateChangedListener = listener;
     }
 
     void startAdHoc(){
@@ -53,7 +58,7 @@ class AdHocManager {
 
 
     //todo
-    void sendViaBroadcast(ChatMessage message){
+    void sendViaBroadcast(Object message){
         mBroadcastManager.sendObject(message);
     }
 
@@ -108,7 +113,7 @@ class AdHocManager {
                     //                    responseReceivedListener.onWifiStatusChanged("Connecting...");
                 } else {
                     //                    responseReceivedListener.onWifiStatusChanged("Connected");
-//                    mOnWifiStateChangedListener.onWifiStateChanged(ADHOC_STATUS.CONNECTED);
+                    mOnWifiStateChangedListener.onWifiStateChanged(ADHOC_STATUS.CONNECTED);
                 }
             }
         };

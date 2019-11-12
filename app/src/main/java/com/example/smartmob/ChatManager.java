@@ -10,14 +10,20 @@ import java.util.List;
 import android.os.Handler;
 import android.widget.Toast;
 
+import com.google.common.hash.BloomFilter;
+import com.google.common.hash.Funnels;
 
+interface OnWifiStateChangedListener{
+    void onWifiStateChanged(ADHOC_STATUS state);
+}
 
 interface OnDataReceiveListener {
     void onDataReceive(Object data, InetAddress address);
 }
 
-public class ChatManager implements OnDataReceiveListener {
+public class ChatManager implements OnDataReceiveListener, OnWifiStateChangedListener {
 
+    private BloomFilter<String> mBloomfilter;
     private AdHocManager mAdHocManager;
     private String groupPin;
 
@@ -28,8 +34,17 @@ public class ChatManager implements OnDataReceiveListener {
 
         mAdHocManager = new AdHocManager();
         mAdHocManager.setupListener(this);
+        mAdHocManager.setOnWifiStateChangedListener(this);
+        mBloomfilter = BloomFilter.create(Funnels.stringFunnel(Charset.defaultCharset()),1000,0.001);
+        setupBloomFilter();
     }
 
+    private void setupBloomFilter(){
+        List<ChatMessage> messages = DBManager.getInstance().fetchChatMessageList();
+        for(ChatMessage chatMessage:messages){
+            mBloomfilter.put(chatMessage.toBloomfilterString());
+        }
+    }
 
     void setOnAddNewMessageListener(onAddNewMessageListener listener){
         mOnAddNewMessageListener = listener;
@@ -53,9 +68,19 @@ public class ChatManager implements OnDataReceiveListener {
 
     void sendMessage(ChatMessage message){
         DBManager.getInstance().addMessage(message);
-        sendAllExisted(message);
+        mAdHocManager.sendViaBroadcast(message);
     }
 
+    void sendBeacon(){
+        mAdHocManager.sendViaBroadcast(mBloomfilter);
+    }
+
+    @Override
+    public void onWifiStateChanged(ADHOC_STATUS state) {
+        if(state == ADHOC_STATUS.CONNECTED) {
+            sendBeacon();
+        }
+    }
 
     private boolean isNewMessage(ChatMessage chatMessage) {
         return !DBManager.getInstance().findMessage(chatMessage);
@@ -68,19 +93,39 @@ public class ChatManager implements OnDataReceiveListener {
             mAdHocManager.sendViaBroadcast(m);
         }
     }
+
+    private void checkBloomFilter(BloomFilter<String> filter, InetAddress address){
+        List<ChatMessage> messages = DBManager.getInstance().fetchChatMessageList();
+        for(ChatMessage chatMessage:messages){
+            if(!filter.mightContain(chatMessage.toBloomfilterString())){
+                mAdHocManager.sendViaBroadcast(chatMessage);
+            }
+        }
+    }
+
+
     @Override
     public void onDataReceive(Object data, InetAddress address) {
-        if(data instanceof ChatMessage){
+        if (data instanceof BloomFilter) {
+            BeaconData beacon = (BeaconData)data;
+            showToast("Rec Beacon from " + address.getHostAddress());
+            checkBloomFilter(beacon.getBloomfilter(), address);
+            //todo Check bloomfilter then send back beacon and data
+            if(!address.getHostAddress().equals("192.168.43.1")){
+                sendBeacon();
+                showToast("Sendback Beacon");
+            }
+        }
+        else if (data instanceof ChatMessage){
             showToast("Rec Message from " + address.getHostAddress());
             ChatMessage chatMessage = (ChatMessage)data;
-            if(isNewMessage(chatMessage)){
+            if(!mBloomfilter.mightContain(chatMessage.toBloomfilterString())){
+                showToast("forward new message");
                 DBManager.getInstance().addMessage(chatMessage);
-                mOnAddNewMessageListener.onAddNewMessageToUi(chatMessage);
-                showToast("insert new message");
-                if(!address.getHostAddress().equals("192.168.43.1")){
+                mBloomfilter.put(chatMessage.toBloomfilterString());
+//                if(!address.getHostAddress().equals("192.168.43.1")){
                     mAdHocManager.sendViaBroadcast(chatMessage);
-                }
-
+//                }
                 if(groupPin.equals(chatMessage.getPin())) {
                     if (!mOnAddNewMessageListener.equals(null)){
                         mOnAddNewMessageListener.onAddNewMessageToUi(chatMessage);
