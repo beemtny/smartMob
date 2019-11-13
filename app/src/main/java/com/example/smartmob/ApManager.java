@@ -95,12 +95,12 @@ class ApManager {
             public void run() {
                 handler.post(new Runnable() {
                     public void run() {
-                        if(currentMode == WIFI_MODE.HOTSPOT){
+//                        if(currentMode == WIFI_MODE.HOTSPOT){
                             clientMode();
-                        }
-                        else{
-                            hotspotMode();
-                        }
+//                        }
+//                        else{
+//                            hotspotMode();
+//                        }
                         Toast.makeText(context,"Changing to mode = " + (currentMode == WIFI_MODE.HOTSPOT ? "Hotspot" : "Client"),Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -121,7 +121,7 @@ class ApManager {
 
         WifiConfiguration wifiConfiguration = new WifiConfiguration();
         wifiConfiguration.SSID = "\"" + config.SSID + "\"";
-//        wifiConfiguration.preSharedKey = "\"" + config.preSharedKey + "\"";
+        wifiConfiguration.preSharedKey = "\"" + config.preSharedKey + "\"";
         //Config for open network
         wifiConfiguration.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
         wifiConfiguration.allowedProtocols.set(WifiConfiguration.Protocol.RSN);

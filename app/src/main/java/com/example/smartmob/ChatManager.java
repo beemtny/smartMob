@@ -23,7 +23,7 @@ interface OnDataReceiveListener {
 
 public class ChatManager implements OnDataReceiveListener, OnWifiStateChangedListener {
 
-    private BloomFilter<String> mBloomfilter;
+//    private BloomFilter<String> mBloomfilter;
     private AdHocManager mAdHocManager;
     private String groupPin;
 
@@ -34,17 +34,17 @@ public class ChatManager implements OnDataReceiveListener, OnWifiStateChangedLis
 
         mAdHocManager = new AdHocManager();
         mAdHocManager.setupListener(this);
-        mAdHocManager.setOnWifiStateChangedListener(this);
-        mBloomfilter = BloomFilter.create(Funnels.stringFunnel(Charset.defaultCharset()),1000,0.001);
-        setupBloomFilter();
+//        mAdHocManager.setOnWifiStateChangedListener(this);
+//        mBloomfilter = BloomFilter.create(Funnels.stringFunnel(Charset.defaultCharset()),1000,0.001);
+//        setupBloomFilter();
     }
 
-    private void setupBloomFilter(){
-        List<ChatMessage> messages = DBManager.getInstance().fetchChatMessageList();
-        for(ChatMessage chatMessage:messages){
-            mBloomfilter.put(chatMessage.toBloomfilterString());
-        }
-    }
+//    private void setupBloomFilter(){
+//        List<ChatMessage> messages = DBManager.getInstance().fetchChatMessageList();
+//        for(ChatMessage chatMessage:messages){
+//            mBloomfilter.put(chatMessage.toBloomfilterString());
+//        }
+//    }
 
     void setOnAddNewMessageListener(onAddNewMessageListener listener){
         mOnAddNewMessageListener = listener;
@@ -68,18 +68,19 @@ public class ChatManager implements OnDataReceiveListener, OnWifiStateChangedLis
 
     void sendMessage(ChatMessage message){
         DBManager.getInstance().addMessage(message);
+//        mBloomfilter.put(message.toBloomfilterString());
         mAdHocManager.sendViaBroadcast(message);
     }
 
-    void sendBeacon(){
-        BeaconData beacon = new BeaconData(mBloomfilter);
-        mAdHocManager.sendViaBroadcast(beacon);
-    }
+//    void sendBeacon(){
+//        BeaconData beacon = new BeaconData(mBloomfilter);
+//        mAdHocManager.sendViaBroadcast(beacon);
+//    }
 
     @Override
     public void onWifiStateChanged(ADHOC_STATUS state) {
         if(state == ADHOC_STATUS.CONNECTED) {
-            sendBeacon();
+            sendAllExisted();
         }
     }
 
@@ -87,8 +88,7 @@ public class ChatManager implements OnDataReceiveListener, OnWifiStateChangedLis
         return !DBManager.getInstance().findMessage(chatMessage);
     }
 
-    private void sendAllExisted(ChatMessage newMessage){
-        mAdHocManager.sendViaBroadcast(newMessage);
+    private void sendAllExisted(){
         List<ChatMessage> chatMessageList = DBManager.getInstance().fetchChatMessageList();
         for(ChatMessage m: chatMessageList){
             mAdHocManager.sendViaBroadcast(m);
@@ -98,34 +98,33 @@ public class ChatManager implements OnDataReceiveListener, OnWifiStateChangedLis
     private void checkBloomFilter(BloomFilter<String> filter, InetAddress address){
         List<ChatMessage> messages = DBManager.getInstance().fetchChatMessageList();
         for(ChatMessage chatMessage:messages){
-            if(!filter.mightContain(chatMessage.toBloomfilterString())){
+//            if(!filter.mightContain(chatMessage.toBloomfilterString())){
                 mAdHocManager.sendViaBroadcast(chatMessage);
-            }
+//            }
         }
     }
 
 
     @Override
     public void onDataReceive(Object data, InetAddress address) {
-        if (data instanceof BeaconData) {
-            BeaconData beacon = (BeaconData)data;
-            showToast("Rec Beacon from " + address.getHostAddress());
-            checkBloomFilter(beacon.getBloomfilter(), address);
-            //todo Check bloomfilter then send back beacon and data
-            if(!address.getHostAddress().equals(BroadcastManager.getIpAddress()) && !address.getHostAddress().equals("192.168.43.1")){
-                sendBeacon();
-                showToast("Sendback Beacon");
-            }
-        }
-        else if (data instanceof ChatMessage){
+//        if (data instanceof BeaconData) {
+//            BeaconData beacon = (BeaconData)data;
+//            showToast("Rec Beacon from " + address.getHostAddress());
+//            checkBloomFilter(beacon.getBloomfilter(), address);
+//            //todo Check bloomfilter then send back beacon and data
+//            if(!address.getHostAddress().equals(BroadcastManager.getIpAddress()) && !address.getHostAddress().equals("192.168.43.1")){
+//                sendBeacon();
+//                showToast("Sendback Beacon");
+//            }
+//        }
+        if (data instanceof ChatMessage){
             showToast("Rec Message from " + address.getHostAddress());
             ChatMessage chatMessage = (ChatMessage)data;
             if(isNewMessage(chatMessage)){
                 showToast("forward new message");
-                DBManager.getInstance().addMessage(chatMessage);
-                mBloomfilter.put(chatMessage.toBloomfilterString());
+                sendMessage(chatMessage);
+                sendAllExisted();
 //                if(!address.getHostAddress().equals("192.168.43.1")){
-                    mAdHocManager.sendViaBroadcast(chatMessage);
 //                }
                 if(groupPin.equals(chatMessage.getPin())) {
                     if (!mOnAddNewMessageListener.equals(null)){
