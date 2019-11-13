@@ -123,7 +123,7 @@ public class ChatManager implements OnDataReceiveListener, OnWifiStateChangedLis
             if(isNewMessage(chatMessage)){
                 showToast("forward new message");
                 sendMessage(chatMessage);
-                sendAllExisted();
+
 //                if(!address.getHostAddress().equals("192.168.43.1")){
 //                }
                 if(groupPin.equals(chatMessage.getPin())) {

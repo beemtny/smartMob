@@ -278,7 +278,7 @@ class BroadcastManager {
 //    }
 
 
-    public static InetAddress getIpAddress() {
+    private InetAddress getIpAddress() {
         InetAddress inetAddress = null;
         InetAddress myAddr = null;
 

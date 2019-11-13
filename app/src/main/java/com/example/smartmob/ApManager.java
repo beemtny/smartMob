@@ -95,12 +95,12 @@ class ApManager {
             public void run() {
                 handler.post(new Runnable() {
                     public void run() {
-//                        if(currentMode == WIFI_MODE.HOTSPOT){
+                        if(currentMode == WIFI_MODE.HOTSPOT){
                             clientMode();
-//                        }
-//                        else{
-//                            hotspotMode();
-//                        }
+                        }
+                        else{
+                            hotspotMode();
+                        }
                         Toast.makeText(context,"Changing to mode = " + (currentMode == WIFI_MODE.HOTSPOT ? "Hotspot" : "Client"),Toast.LENGTH_SHORT).show();
                     }
                 });

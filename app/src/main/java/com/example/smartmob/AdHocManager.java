@@ -113,7 +113,7 @@ class AdHocManager {
                     //                    responseReceivedListener.onWifiStatusChanged("Connecting...");
                 } else {
                     //                    responseReceivedListener.onWifiStatusChanged("Connected");
-//                    mOnWifiStateChangedListener.onWifiStateChanged(ADHOC_STATUS.CONNECTED);
+                    mOnWifiStateChangedListener.onWifiStateChanged(ADHOC_STATUS.CONNECTED);
                 }
             }
         };
